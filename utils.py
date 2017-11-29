@@ -37,3 +37,31 @@ def labelPlot(xlabel='', ylabel='', title=''):
     plt.ylabel(ylabel)
     plt.title(title)
     plt.show()
+
+
+def createTiles(x=1,y=1,hwidth=8,vwidth=4): 
+    fig,plots = plt.subplots(x,y,figsize=(hwidth,vwidth));
+    plots = plots.flatten()
+    return(fig, plots)
+
+
+def createTiles(x=1,y=1,hwidth=8,vwidth=4): 
+    fig,plots = plt.subplots(x,y,figsize=(hwidth,vwidth));
+    plots = plots.flatten()
+    return(fig, plots)
+
+
+def plotHistory(trainHist, validHist):
+    fig, plots = createTiles(1,2,15,5)
+    plots[0].plot(trainHist[0]);
+    plots[0].plot(validHist[0])
+    plots[0].set_title('Loss')
+    plots[0].set_xlabel('Epochs')
+#     plots[1].imshow(img_gray, cmap = plt.get_cmap('gray'));     plots[1].set_title('Gray Scale Image')
+
+    plots[1].plot(trainHist[1]);
+    plots[1].plot(validHist[1])
+    plots[1].set_title('Accuracy')
+    plots[1].set_xlabel('Epochs')
+    plt.show()
+    

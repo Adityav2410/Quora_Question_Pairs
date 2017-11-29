@@ -41,14 +41,17 @@ class DataGenerator:
         with open(os.path.join(self.dirpath, self.embeddFileName), 'rb') as handle:
             self.embeddDict = pickle.load(handle)
         assert self.wordEmbeddDim == self.embeddDict.values()[0].shape[0]
+        print( "Data Generator succesfully initialized :) :) :) " )
 
-    def getTrainBatch(self):
-        trainX = np.zeros((2, self.batchSize, self.questionLen, self.wordEmbeddDim))
-        trainY = np.zeros(self.batchSize)
+    def getTrainBatch(self, batchSize = None):
+    	if not batchSize:
+    		batchSize = self.batchSize
+        trainX = np.zeros((batchSize, 2, self.questionLen, self.wordEmbeddDim))
+        trainY = np.zeros(batchSize).astype(np.int32)
         trainX[:,:,0] = self.embeddDict['start']
 
         i = 0
-        while( i < self.batchSize):
+        while( i < batchSize):
             if self.trainCounter >= self.nTrainData :
                 self.trainCounter = 0
             currData = self.trainData.iloc[self.trainCounter]
@@ -59,31 +62,34 @@ class DataGenerator:
             index = 0
             try:
                 for index in range( min(len1, self.questionLen-1 )):
-                    trainX[0,i,index+1] = self.embeddDict.get(ques1[index], self.defaultValue)
-                trainX[0,i,index+1] = self.embeddDict['end']
+                    trainX[i,0,index+1] = self.embeddDict.get(ques1[index], self.defaultValue)
+                trainX[i, 0,index+1] = self.embeddDict['end']
                 for index in range( min(len2, self.questionLen-1 )):
-                    trainX[1,i,index+1] = self.embeddDict.get(ques2[index],self.defaultValue)
-                trainX[1,i,index+1] = self.embeddDict['end']
+                    trainX[i,1,index+1] = self.embeddDict.get(ques2[index],self.defaultValue)
+                trainX[i,1,index+1] = self.embeddDict['end']
                 trainY[i] = currData['is_duplicate']
                 i += 1
                 self.trainCounter += 1
                 
             except Exception as e :
-#                 bp()
-                print (e)
+            	self.trainCounter += 1
+                print ("TrainBatch Exception: " + str(e) )
                 
                 
-        return [trainX, trainY]
+        return trainX, trainY
 
 
-    def getValidBatch(self):
-        validX = np.zeros((2, self.batchSize, self.questionLen, self.wordEmbeddDim))
-        validY = np.zeros(self.batchSize)
+    def getValidBatch(self, batchSize = None):
+    	if not batchSize:
+    		batchSize = self.batchSize
+
+        validX = np.zeros((batchSize, 2, self.questionLen, self.wordEmbeddDim))
+        validY = np.zeros(batchSize).astype(np.int32)
         validX[:,:,0] = self.embeddDict['start']
 
         i = 0
         defaultValue = np.zeros(self.wordEmbeddDim)
-        while( i < self.batchSize):
+        while( i < batchSize):
             if self.validCounter >= self.nValidData:
                 self.validCounter = 0
             currData = self.validData.iloc[self.validCounter]
@@ -94,15 +100,25 @@ class DataGenerator:
             index = 0
             try:
                 for index in range( min(len1, self.questionLen-1 )):
-                    validX[0,i,index+1] = self.embeddDict.get(ques1[index], self.defaultValue )
-                validX[0,i,index+1] = self.embeddDict['end']
+                    validX[i,0,index+1] = self.embeddDict.get(ques1[index], self.defaultValue )
+                validX[i,0,index+1] = self.embeddDict['end']
                 for index in range( min(len2, self.questionLen-1 )):
-                    validX[1,i,index+1] = self.embeddDict.get(ques2[index], self.defaultValue)
-                validX[1,i,index+1] = self.embeddDict['end']
+                    validX[i,1,index+1] = self.embeddDict.get(ques2[index], self.defaultValue)
+                validX[i,1,index+1] = self.embeddDict['end']
                 validY[i] = currData['is_duplicate']
                 i+=1
                 self.validCounter += 1
             except Exception as e:
-                print (e)
+            	self.validCounter += 1
+                print("ValidBatch Exception:  " + str(e) )
                 
-        return [validX, validY]
+        return validX, validY
+
+
+    def trainGenerator(self):
+    	while(1):
+    		yield self.getTrainBatch()
+
+    def validGenerator(self):
+    	while(1):
+    		yield self.getValidBatch()
