@@ -20,7 +20,7 @@ def plotLengthHistogram(data):
 	    for question in question2:
 	        lenFreq[len(question)]+=1
 	except Exception as e:
-	    print e
+	    print (e)
 	plotGraph( lenFreq.keys(), lenFreq.values(), 'length of question', 'No of questions', 'Frequency vs length' )
 
 
