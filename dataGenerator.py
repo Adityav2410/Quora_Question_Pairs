@@ -69,8 +69,8 @@ class DataGenerator:
                 self.trainCounter += 1
                 
             except Exception as e :
-                bp()
-                print e
+#                 bp()
+                print (e)
                 
                 
         return [trainX, trainY]
@@ -103,6 +103,6 @@ class DataGenerator:
                 i+=1
                 self.validCounter += 1
             except Exception as e:
-                print e
+                print (e)
                 
         return [validX, validY]
