@@ -68,3 +68,5 @@ for i in range(nEpochs):
             print( "Epoch:{0}\t Iter: {1}\t TrainLoss {2:.4f}\t ValidLos: {3:.4f} \
             TrainAcc: {4:.4f}\t ValidAcc: {5:.4f}"
                    .format(i, j+1, trainLoss, validLoss, trainAcc, validAcc))
+
+trainer.saveDetails()        
